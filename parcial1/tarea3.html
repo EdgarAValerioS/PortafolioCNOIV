@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tarea 3 — No presiones Esc... todavía | Portafolio</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="brand-name">Edgar Alejandro Valerio Sanchez</span>
+        <span class="brand-alias">@EdRpmn</span>
+      </div>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="siteNav">
+        <a href="../index.html">Inicio</a>
+        <a href="index.html" class="active">Parcial 1</a>
+        <a href="#" class="disabled">Parcial 2</a>
+        <a href="#" class="disabled">Parcial 3</a>
+        <a href="../index.html#contacto">Contacto</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="container">
+        <p class="eyebrow">Parcial I — Tarea 3</p>
+        <h1>No presiones Esc... todavía</h1>
+        <p class="subtitle">CNO IV — Seguridad Informática · Mtro. Servando López Contreras · UPSLP</p>
+      </div>
+    </section>
+
+    <section class="section" id="objetivo">
+      <div class="container">
+        <h2>Objetivo general</h2>
+        <p>
+          Implementar y documentar, en un entorno de laboratorio controlado, un programa
+          basado en event hooks y callbacks que permita registrar eventos de teclado,
+          asociarlos temporalmente y transmitir telemetría hacia un receptor de laboratorio,
+          con el fin de comprender el funcionamiento técnico de una técnica de captura de
+          entrada y reconocer sus implicaciones dentro de la ciberseguridad.
+        </p>
+
+        <h3>Objetivos específicos</h3>
+        <ul class="plain-list">
+          <li>Modificar el código base para incorporar persistencia del registro, asociación temporal y envío controlado de eventos.</li>
+          <li>Comprobar y explicar el funcionamiento del programa mediante pruebas, capturas de pantalla y análisis del código desarrollado.</li>
+          <li>Documentar y publicar la actividad en el portafolio digital del alumno, integrando el informe en presentación, el código fuente y la página HTML correspondiente.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section alt" id="analisis">
+      <div class="container">
+        <h2>Análisis del código</h2>
+        <p>
+          El programa utiliza <code>pynput.keyboard</code> para capturar los eventos del
+          teclado en segundo plano y <code>datetime</code> para registrar el momento exacto
+          de cada pulsación con precisión de milisegundos, lo que permite reconstruir la
+          línea de tiempo completa de la actividad registrada.
+        </p>
+        <p>
+          Cada evento se normaliza (distinguiendo teclas alfanuméricas de teclas especiales),
+          se numera de forma secuencial y se concatena en una sola línea de registro que
+          combina marca de tiempo, tipo de acción y valor de la tecla. Los registros se
+          escriben en modo append sobre un archivo de texto local, garantizando la
+          persistencia de la información sin sobrescribir lo ya capturado.
+        </p>
+        <p>
+          Las funciones <code>on_press</code> y <code>on_release</code> actúan como los
+          callbacks que interceptan cada estado de la tecla, y se define la tecla
+          <code>Esc</code> como condición de salida controlada para detener el listener sin
+          dejar procesos huérfanos.
+        </p>
+
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/tarea3/slide-03.jpg" alt="Librerías y variable de conteo" class="evidence-img">
+            <figcaption>Librerías clave y variable de control</figcaption>
+          </figure>
+          <figure class="evidence-item">
+            <img src="assets/tarea3/slide-04.jpg" alt="Función de marca de tiempo" class="evidence-img">
+            <figcaption>Asociación temporal con milisegundos</figcaption>
+          </figure>
+          <figure class="evidence-item">
+            <img src="assets/tarea3/slide-05.jpg" alt="Normalización de teclas" class="evidence-img">
+            <figcaption>Normalización y estructura del registro</figcaption>
+          </figure>
+          <figure class="evidence-item">
+            <img src="assets/tarea3/slide-06.jpg" alt="Persistencia del registro" class="evidence-img">
+            <figcaption>Persistencia en disco</figcaption>
+          </figure>
+          <figure class="evidence-item">
+            <img src="assets/tarea3/slide-07.jpg" alt="Callbacks on_press y on_release" class="evidence-img">
+            <figcaption>Callbacks y kill switch</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pruebas">
+      <div class="container">
+        <h2>Pruebas de ejecución y persistencia</h2>
+        <p>
+          Se probó el script empaquetado con extensión <code>.pyw</code>, lo que permite
+          ejecutarlo mediante <code>pythonw.exe</code> sin abrir una ventana de consola. El
+          registro se genera en la misma ubicación del script conforme el usuario utiliza
+          la computadora con normalidad.
+        </p>
+
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/tarea3/slide-08.jpg" alt="Script guardado como archivo pyw" class="evidence-img">
+            <figcaption>Script guardado con extensión .pyw</figcaption>
+          </figure>
+          <figure class="evidence-item">
+            <img src="assets/tarea3/slide-09.jpg" alt="Uso normal de la computadora durante la ejecución" class="evidence-img">
+            <figcaption>El usuario no percibe nada fuera de lo común</figcaption>
+          </figure>
+          <figure class="evidence-item">
+            <img src="assets/tarea3/slide-10.jpg" alt="Administrador de tareas mostrando el proceso" class="evidence-img">
+            <figcaption>Única forma de detenerlo: finalizar el proceso</figcaption>
+          </figure>
+          <figure class="evidence-item">
+            <img src="assets/tarea3/slide-11.jpg" alt="Contenido del archivo registro.txt" class="evidence-img">
+            <figcaption>Registro generado con marca de tiempo y numeración</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="conclusiones">
+      <div class="container">
+        <h2>Conclusiones</h2>
+        <p>
+          Esta práctica demuestra que con muy pocas líneas de código en Python se puede
+          crear una herramienta capaz de registrar lo que escribe un usuario.
+        </p>
+        <p>
+          Guardar los datos en un archivo de texto (persistencia) junto con la hora exacta
+          (asociación temporal) es clave, ya que permite reconstruir contraseñas, mensajes
+          o el uso de la computadora paso a paso.
+        </p>
+        <p>
+          Entender cómo se programa este tipo de software "desde adentro" ayuda a
+          identificar, como futuros ingenieros, qué buscar a la hora de proteger equipos y
+          detectar procesos sospechosos corriendo en segundo plano.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="descarga">
+      <div class="container">
+        <h2>Informe completo</h2>
+        <p>Documento con el análisis, el código fuente completo y las evidencias de la actividad.</p>
+        <a href="assets/tarea3/Documentacion_keylogger.pdf" class="download-btn" download>
+          Descargar informe (PDF)
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; <span id="year"></span> Edgar Valerio· Portafolio de Seguridad Informatica</p>
+      <p class="footer-secondary"><a href="index.html">&larr; Volver a Parcial 1</a></p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>
