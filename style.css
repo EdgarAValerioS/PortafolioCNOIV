@@ -246,6 +246,114 @@ a {
   min-height: 1.2em;
 }
 
+/* Lista de tareas por parcial */
+
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  max-width: 560px;
+}
+
+.task-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+}
+
+.task-item a {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text);
+}
+
+.task-item.disabled {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.task-num {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--accent);
+}
+
+.task-item.disabled .task-num {
+  color: var(--text-muted);
+}
+
+/* Listas, código inline y notas dentro de una tarea */
+
+.plain-list {
+  color: var(--text-muted);
+  max-width: 640px;
+  padding-left: 20px;
+  margin: 12px 0 0;
+}
+
+.plain-list li {
+  margin-bottom: 8px;
+}
+
+.section h3 {
+  font-size: 1.05rem;
+  margin: 28px 0 4px;
+}
+
+.section p code {
+  background: var(--bg-alt);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.88em;
+}
+
+/* Grid de evidencias */
+
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin: 28px 0;
+}
+
+.evidence-item {
+  margin: 0;
+}
+
+.evidence-item .evidence-img {
+  margin-top: 0;
+  display: block;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.evidence-item figcaption {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* Botón de descarga */
+
+.download-btn {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  margin-top: 12px;
+}
+
+.download-btn:hover {
+  background: var(--accent-dark);
+}
+
 /* Footer */
 
 .site-footer {
