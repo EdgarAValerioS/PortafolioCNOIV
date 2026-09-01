@@ -311,6 +311,10 @@ a {
   font-size: 0.88em;
 }
 
+.plain-list.numbered {
+  list-style: decimal;
+}
+
 /* Grid de evidencias */
 
 .evidence-grid {

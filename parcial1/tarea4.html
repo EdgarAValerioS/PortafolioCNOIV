@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tarea 4 — Una página demasiado convincente | Portafolio</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="brand-name">Edgar Alejandro Valerio Sanchez</span>
+        <span class="brand-alias">@EdRpmn</span>
+      </div>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="siteNav">
+        <a href="../index.html">Inicio</a>
+        <a href="index.html" class="active">Parcial 1</a>
+        <a href="#" class="disabled">Parcial 2</a>
+        <a href="#" class="disabled">Parcial 3</a>
+        <a href="../index.html#contacto">Contacto</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="container">
+        <p class="eyebrow">Parcial I — Tarea 4</p>
+        <h1>Una página demasiado convincente</h1>
+        <p class="subtitle">CNO IV — Seguridad Informática · UPSLP · 31 de agosto de 2026</p>
+      </div>
+    </section>
+
+    <section class="section" id="objetivo">
+      <div class="container">
+        <h2>Objetivo</h2>
+        <p>
+          Implementar y analizar, en un entorno de laboratorio controlado, una simulación
+          de ingeniería social mediante Social-Engineer Toolkit (SET), utilizando una
+          página web ficticia para comprender el funcionamiento de una técnica de captura
+          de información y reconocer los elementos que permiten identificar un intento de
+          phishing.
+        </p>
+      </div>
+    </section>
+
+    <section class="section alt" id="escenario">
+      <div class="container">
+        <h2>Descripción del escenario</h2>
+        <p>
+          El área de seguridad informática de una organización recibe reportes de empleados
+          que aseguran haber recibido un mensaje sobre una supuesta actualización de sus
+          credenciales, con un enlace hacia un portal aparentemente institucional. La página
+          incluye logotipo, campos de usuario y contraseña, y un aviso de sesión expirada.
+          A primera vista nada parece fuera de lo común, pero el portal no pertenece a la
+          organización.
+        </p>
+        <h3>¿Qué es un Credential Harvester?</h3>
+        <p>
+          Es un vector de ataque de ingeniería social que despliega un servidor web
+          malicioso diseñado para interceptar y almacenar datos confidenciales introducidos
+          por una víctima engañada, para después redirigirla al sitio legítimo o mostrar un
+          error genérico y no levantar sospechas.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="laboratorio">
+      <div class="container">
+        <h2>Configuración del laboratorio</h2>
+        <p>
+          La simulación se realizó en Kali Linux. Se preparó un archivo HTML local que
+          simula un portal de autenticación básico y se utilizó Social-Engineer Toolkit
+          (SET), módulo Credential Harvester Attack Method, con la opción Custom Import
+          para cargar la página desarrollada y levantar el servidor de escucha en la
+          dirección IP local de la máquina virtual.
+        </p>
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/tarea4/slide-03.jpg" alt="Configuración de red bridged adapter en la máquina virtual" class="evidence-img">
+            <figcaption>Configuración de red (bridged adapter) y verificación con ifconfig</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="evidencias">
+      <div class="container">
+        <h2>Evidencias y funcionamiento</h2>
+
+        <h3>Paso 1 — Diseño de la página web</h3>
+        <p>Se desarrolló el HTML que simula el portal institucional ("Gobierno falso").</p>
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/tarea4/slide-04.jpg" alt="Editor con el código HTML del portal falso y vista previa" class="evidence-img">
+            <figcaption>Código del portal simulado y vista previa en el navegador</figcaption>
+          </figure>
+        </div>
+
+        <h3>Paso 2 — Configuración de SET</h3>
+        <p>Ejecución de <code>setoolkit</code> y selección de los menús para configurar el Credential Harvester con importación personalizada.</p>
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/tarea4/slide-05.jpg" alt="Menú principal de SET y menú de Website Attack Vectors" class="evidence-img">
+            <figcaption>Menú principal de SET y vectores de ataque web</figcaption>
+          </figure>
+          <figure class="evidence-item">
+            <img src="assets/tarea4/slide-06.jpg" alt="Selección del método Credential Harvester y Custom Import" class="evidence-img">
+            <figcaption>Selección de Credential Harvester Attack Method → Custom Import</figcaption>
+          </figure>
+          <figure class="evidence-item">
+            <img src="assets/tarea4/slide-07.jpg" alt="Ingreso de la IP de la máquina virtual como servidor" class="evidence-img">
+            <figcaption>La IP de la máquina virtual se define como servidor de escucha</figcaption>
+          </figure>
+        </div>
+
+        <h3>Paso 3 — Simulación del ataque</h3>
+        <p>
+          Acceso al portal falso desde el navegador introduciendo credenciales ficticias.
+          Cualquier dispositivo dentro de la red, alámbrico o inalámbrico, puede acceder al
+          servidor. Al enviar el formulario, la página redirige a un sitio real para que el
+          engaño resulte más creíble.
+        </p>
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/tarea4/slide-08.jpg" alt="Portal falso mostrando el formulario de credenciales y redirección a Google" class="evidence-img">
+            <figcaption>Portal falso y redirección posterior al envío del formulario</figcaption>
+          </figure>
+        </div>
+
+        <h3>Paso 4 — Captura de credenciales</h3>
+        <p>Registro de las credenciales interceptadas por SET en la terminal (<em>POSSIBLE CREDENTIAL HARVESTER FOUND</em>).</p>
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/tarea4/slide-09.jpg" alt="Terminal de SET mostrando la captura de credenciales" class="evidence-img">
+            <figcaption>Credenciales capturadas en texto plano en la terminal de SET</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="flujo">
+      <div class="container">
+        <h2>Flujo de captura de información</h2>
+        <ol class="plain-list numbered">
+          <li>El usuario interactúa con el formulario HTML local en su navegador e ingresa sus datos (usuario y contraseña).</li>
+          <li>Al presionar el botón de ingreso, el navegador genera una petición HTTP POST dirigida al servidor local levantado por SET.</li>
+          <li>El servidor de SET intercepta esta petición y extrae los parámetros enviados por el formulario.</li>
+          <li>SET registra estos parámetros en texto plano en su terminal y los almacena en un archivo local.</li>
+          <li>Finalmente, SET ejecuta una redirección automática para disimular la captura de información.</li>
+        </ol>
+        <p class="note-box">
+          Nota: este ataque consiste en la captura de credenciales por engaño directo y
+          recolección de datos enviados voluntariamente por el usuario, no en la
+          vulneración técnica de una contraseña almacenada en una base de datos.
+        </p>
+      </div>
+    </section>
+
+    <section class="section alt" id="indicadores">
+      <div class="container">
+        <h2>Indicadores técnicos y visuales de phishing</h2>
+        <ul class="plain-list">
+          <li><strong>URL sospechosa:</strong> dirección IP cruda o dominio con errores tipográficos que simula ser el legítimo.</li>
+          <li><strong>Falta de cifrado:</strong> ausencia de certificado TLS/SSL, el navegador marca "No seguro".</li>
+          <li><strong>Tono coercitivo:</strong> mensajes de urgencia que obligan a actuar de inmediato.</li>
+          <li><strong>Diseño visual inconsistente:</strong> elementos genéricos o tipografía que no corresponde a la imagen corporativa real.</li>
+          <li><strong>Redirecciones anómalas:</strong> enlaces internos que no llevan a ningún sitio o solo recargan la misma página.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="controles">
+      <div class="container">
+        <h2>Controles de seguridad propuestos</h2>
+        <ul class="plain-list">
+          <li><strong>Autenticación multifactor (MFA):</strong> mitiga el impacto de credenciales robadas al requerir un segundo factor; no evita el engaño inicial, pero inutiliza el acceso sin él.</li>
+          <li><strong>Gestores de contraseñas corporativos:</strong> se niegan a autocompletar si la URL no coincide exactamente con el dominio oficial registrado.</li>
+          <li><strong>Filtros anti-phishing en correo:</strong> bloquean correos con enlaces hacia IPs directas o dominios de baja reputación.</li>
+          <li><strong>Monitoreo de tráfico perimetral:</strong> detecta conexiones anómalas hacia IPs no autorizadas para alojar portales de autenticación.</li>
+          <li><strong>Capacitación en Security Awareness:</strong> entrena al personal para identificar señales de fraude; es el control fundamental a nivel usuario.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section alt" id="conclusion">
+      <div class="container">
+        <h2>Conclusión</h2>
+        <p>
+          Esta simulación evidenció la facilidad y rapidez con la que se puede montar un
+          escenario de ingeniería social persuasivo con Social-Engineer Toolkit (SET). Ver
+          en tiempo real cómo se interceptan credenciales en texto plano confirma que el
+          eslabón más débil en ciberseguridad sigue siendo el factor humano. Más allá de
+          una infraestructura robusta, es indispensable la concientización continua de los
+          usuarios (Security Awareness) junto con medidas complementarias como MFA para
+          mitigar los riesgos de phishing orientados a comprometer el acceso institucional.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="descarga">
+      <div class="container">
+        <h2>Informe completo</h2>
+        <p>Documento con el análisis completo, todas las evidencias y el detalle paso a paso de la actividad.</p>
+        <a href="assets/tarea4/Act04.pdf" class="download-btn" download>
+          Descargar informe (PDF)
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; <span id="year"></span> Edgar Valerio· Portafolio de Seguridad Informatica</p>
+      <p class="footer-secondary"><a href="index.html">&larr; Volver a Parcial 1</a></p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>
