@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PR01 — Walkthrough SNAKEOIL | Portafolio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="brand-name">Edgar Alejandro Valerio Sanchez</span>
+        <span class="brand-alias">@EdRpmn</span>
+      </div>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="siteNav">
+        <a href="index.html">Inicio</a>
+        <a href="parcial1/index.html">Parcial 1</a>
+        <a href="#" class="disabled">Parcial 2</a>
+        <a href="#" class="disabled">Parcial 3</a>
+        <a href="index.html#contacto">Contacto</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="container">
+        <p class="eyebrow">PR01 · Introducción a la Ciberseguridad</p>
+        <h1>De la teoría a la práctica: walkthrough en acción</h1>
+        <p class="subtitle">Máquina objetivo: DigitalWorld.local — SNAKEOIL · Docente: Servando López</p>
+      </div>
+    </section>
+
+    <section class="section" id="introduccion">
+      <div class="container">
+        <h2>Introducción</h2>
+        <p>
+          Este informe documenta un ejercicio práctico de pentesting realizado sobre la
+          máquina virtual DigitalWorld.local: SNAKEOIL (obtenida de VulnHub), dentro de un
+          entorno de laboratorio aislado y con fines exclusivamente educativos. El objetivo
+          fue aplicar la metodología estándar de una prueba de penetración —reconocimiento,
+          escaneo, enumeración, análisis de vulnerabilidades, explotación y
+          post-explotación— para comprender de forma práctica cómo se identifican y
+          explotan fallos reales de seguridad.
+        </p>
+        <p>
+          La cadena de ataque combinó un control de acceso insuficiente, una vulnerabilidad
+          de tipo SSRF (Server-Side Request Forgery), una inyección de comandos del sistema
+          operativo y el uso de credenciales expuestas en el código fuente, permitiendo
+          escalar desde un registro de usuario común hasta privilegios totales de
+          administrador.
+        </p>
+
+        <h3>Objetivo general</h3>
+        <p>
+          Demostrar la capacidad de aplicar conocimientos teóricos de seguridad informática
+          en un entorno práctico, mediante un walkthrough detallado y la explicación de las
+          técnicas y metodologías utilizadas para vulnerar una máquina virtual.
+        </p>
+
+        <h3>Objetivos específicos</h3>
+        <ul class="plain-list">
+          <li>Configurar un entorno de virtualización aislado para realizar las pruebas de forma segura.</li>
+          <li>Utilizar herramientas de escaneo de puertos y servicios para identificar posibles vectores de ataque.</li>
+          <li>Enumerar los servicios y aplicaciones en ejecución del sistema objetivo.</li>
+          <li>Investigar las vulnerabilidades conocidas asociadas con los servicios identificados.</li>
+          <li>Evaluar el riesgo y la viabilidad de explotar cada vulnerabilidad.</li>
+          <li>Seleccionar y adaptar los exploits/técnicas adecuadas para las vulnerabilidades encontradas.</li>
+          <li>Escalar privilegios para obtener acceso administrativo.</li>
+          <li>Documentar cada paso del proceso con comandos, resultados y capturas.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section alt" id="laboratorio">
+      <div class="container">
+        <h2>Preparación del entorno de laboratorio</h2>
+        <p>
+          Se configuró un entorno de virtualización aislado con Oracle VM VirtualBox y una
+          red "Host-Only" dedicada exclusivamente al laboratorio, de forma que ninguna de
+          las dos máquinas fuera visible desde la red doméstica del equipo físico.
+        </p>
+
+        <table class="report-table">
+          <thead><tr><th>Elemento</th><th>Detalle</th></tr></thead>
+          <tbody>
+            <tr><td>Hipervisor</td><td>Oracle VM VirtualBox</td></tr>
+            <tr><td>VM atacante</td><td>Kali Linux 2026.2 — 192.168.56.101</td></tr>
+            <tr><td>VM víctima</td><td>DigitalWorld.local: SNAKEOIL — 192.168.56.102</td></tr>
+            <tr><td>Red utilizada</td><td>VirtualBox Host-Only Ethernet Adapter (vboxnet0), rango 192.168.56.0/24, DHCP habilitado</td></tr>
+            <tr><td>Adaptador NAT</td><td>Adicional solo en Kali, para actualizar herramientas sin exponer a la víctima</td></tr>
+          </tbody>
+        </table>
+
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/slide-03.jpg" alt="Configuración de red host-only en VirtualBox" class="evidence-img">
+            <figcaption>Configuración de red host-only y adaptador NAT en Kali</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="reconocimiento">
+      <div class="container">
+        <h2>Reconocimiento y escaneo</h2>
+
+        <h3>Descubrimiento del host</h3>
+        <p>Se identificó la IP de la máquina víctima dentro de la red host-only mediante escaneo ARP pasivo y confirmación con Nmap.</p>
+
+        <table class="report-table">
+          <thead><tr><th>Comando</th><th>Resultado / Explicación</th></tr></thead>
+          <tbody>
+            <tr><td><code>netdiscover -r 192.168.56.0/24</code></td><td>Detectó hosts activos en la red vía tráfico ARP</td></tr>
+            <tr><td><code>ip a</code></td><td>Confirmó la IP propia de Kali: 192.168.56.101 (interfaz eth0)</td></tr>
+            <tr><td><code>nmap -sn 192.168.56.0/24</code></td><td>Ping scan que confirmó 192.168.56.102 como host activo adicional</td></tr>
+          </tbody>
+        </table>
+
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/slide-04.jpg" alt="Escaneo de red y descubrimiento del host víctima" class="evidence-img">
+            <figcaption>Descubrimiento del host víctima en la red host-only</figcaption>
+          </figure>
+          <figure class="evidence-item">
+            <img src="assets/slide-05.jpg" alt="Resultado de netdiscover mostrando los hosts activos" class="evidence-img">
+            <figcaption>Resultado de netdiscover</figcaption>
+          </figure>
+        </div>
+
+        <h3>Escaneo de puertos y servicios (Nmap)</h3>
+        <table class="report-table">
+          <thead><tr><th>Comando</th><th>Resultado / Explicación</th></tr></thead>
+          <tbody>
+            <tr><td><code>nmap -p- -T4 -v 192.168.56.102</code></td><td>3 puertos abiertos: 22/tcp (ssh), 80/tcp (http), 8080/tcp (http-proxy)</td></tr>
+            <tr><td><code>nmap -sV -sC -p22,80,8080 192.168.56.102</code></td><td>22: OpenSSH 7.9p1 | 80: nginx "Welcome to SNAKEOIL!" | 8080: nginx, título "Snake Oil Project", con advertencia de Nmap "Proxy might be redirecting requests" — indicio temprano de una posible vulnerabilidad SSRF</td></tr>
+          </tbody>
+        </table>
+
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/slide-06.jpg" alt="Resultado del escaneo completo de puertos" class="evidence-img">
+            <figcaption>Escaneo completo de puertos TCP</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="enumeracion">
+      <div class="container">
+        <h2>Enumeración de servicios</h2>
+        <p><strong>Puerto 80:</strong> aunque podría pensarse en una posible puerta de entrada al ser el tráfico HTTP sin cifrar, no se encontraron directorios abiertos.</p>
+        <p><strong>Puerto 8080 — "Snake Oil Project":</strong> aloja una aplicación web personalizada (blog corporativo ficticio de "Good Tech Inc."), con posts numerados y funciones de creación/edición de contenido.</p>
+
+        <table class="report-table">
+          <thead><tr><th>Comando</th><th>Resultado / Explicación</th></tr></thead>
+          <tbody>
+            <tr><td><code>gobuster dir -u http://192.168.56.102:8080 -w /usr/share/wordlists/dirb/common.txt</code></td><td>Rutas encontradas: /1, /2, /4 (posts), /create, /login (405), /registration, /run (405), /secret (500), /test, /users</td></tr>
+            <tr><td><code>curl -v http://192.168.56.102:8080/secret</code></td><td>HTTP 500 — sugiere que el endpoint requiere autenticación o una condición especial</td></tr>
+            <tr><td><code>curl -X POST http://192.168.56.102:8080/login</code></td><td>HTTP 400 — confirma que espera JSON con username/password</td></tr>
+            <tr><td><code>curl -X POST http://192.168.56.102:8080/run</code></td><td>HTTP 400 — el endpoint recibe una URL/host y hace una petición por el usuario (posible SSRF, coincide con la advertencia de Nmap)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/slide-07.jpg" alt="Enumeración de directorios con gobuster en el puerto 8080" class="evidence-img">
+            <figcaption>Enumeración de rutas con gobuster</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="vulnerabilidades">
+      <div class="container">
+        <h2>Análisis de vulnerabilidades</h2>
+
+        <h3>Registro abierto y emisión de JWT</h3>
+        <p>
+          El endpoint <code>/registration</code> permite crear una cuenta sin restricciones y
+          devuelve inmediatamente un token de acceso (JWT). El payload decodificado no
+          incluye un campo de rol, lo que sugiere que el backend podría confiar únicamente
+          en el valor de <code>sub</code> para identificar privilegios.
+        </p>
+
+        <h3>Autenticación y filtración de un secreto interno</h3>
+        <p>
+          A diferencia de un header <code>Authorization</code> tradicional, la aplicación
+          espera el JWT en una cookie llamada <code>access_token_cookie</code>. Al consultar
+          <code>/secret</code> con el token de un usuario recién registrado, la respuesta
+          reveló una clave interna (<code>secret_key</code>) que resultó ser la credencial
+          exigida por el endpoint <code>/run</code> para ejecutar acciones — un caso de
+          control de acceso insuficiente, ya que cualquier cuenta autenticada podía
+          obtenerla.
+        </p>
+
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/slide-09.jpg" alt="Registro de usuario, obtención del JWT y filtración del secret_key" class="evidence-img">
+            <figcaption>Registro, login y obtención del secret_key desde /secret</figcaption>
+          </figure>
+        </div>
+
+        <h3>Inyección de comandos del sistema operativo en /run</h3>
+        <p>
+          Con el <code>secret_key</code> en mano, se probó el endpoint <code>/run</code>
+          enviando <code>"url":"-h | whoami;"</code>, obteniendo como respuesta el nombre
+          del usuario del sistema (<code>patrick</code>), confirmando la ejecución arbitraria
+          de comandos.
+        </p>
+      </div>
+    </section>
+
+    <section class="section alt" id="explotacion">
+      <div class="container">
+        <h2>Explotación</h2>
+        <p>
+          Se aprovechó la inyección de comandos para obtener acceso persistente por SSH, en
+          lugar de una reverse shell tradicional: se generó un par de llaves SSH propio y se
+          usó la inyección de comandos para que la propia víctima descargara la llave
+          pública y la guardara como su <code>authorized_keys</code>, habilitando el acceso
+          SSH sin contraseña.
+        </p>
+
+        <table class="report-table">
+          <thead><tr><th>Comando</th><th>Resultado / Explicación</th></tr></thead>
+          <tbody>
+            <tr><td><code>ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa_snakeoil -N ""</code></td><td>Genera el par de llaves RSA en Kali, sin passphrase</td></tr>
+            <tr><td><code>python3 -m http.server 80</code></td><td>Sirve la llave pública por HTTP para que la víctima la descargue</td></tr>
+            <tr><td>Inyección vía <code>/run</code> con <code>wget</code></td><td>La víctima descarga la llave pública y la guarda como su <code>authorized_keys</code></td></tr>
+            <tr><td><code>ssh -i ~/.ssh/id_rsa_snakeoil patrick@192.168.56.102</code></td><td>Acceso SSH exitoso como el usuario patrick, sin contraseña</td></tr>
+          </tbody>
+        </table>
+
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/slide-10.jpg" alt="Generación de llaves SSH y acceso al sistema víctima" class="evidence-img">
+            <figcaption>Acceso SSH persistente mediante la llave pública inyectada</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="postexplotacion">
+      <div class="container">
+        <h2>Post-explotación y escalada de privilegios</h2>
+        <p>
+          Una vez dentro del sistema como <code>patrick</code>, se enumeró su directorio
+          personal y se encontró el código fuente completo de la aplicación web (carpeta
+          <code>flask_blog</code>), confirmando la lógica vulnerable del endpoint
+          <code>/run</code>. Dentro del código se halló una credencial en texto plano
+          definida como valor de configuración <code>JWT_SECRET_KEY</code>, que resultó ser
+          también la contraseña del usuario <code>patrick</code> a nivel de sistema
+          operativo — un caso de reutilización de credenciales.
+        </p>
+        <p>Al usar esa contraseña con <code>sudo su</code> se obtuvo una shell como root.</p>
+
+        <div class="evidence-grid">
+          <figure class="evidence-item">
+            <img src="assets/slide-11.jpg" alt="Revisión del código fuente de la aplicación Flask" class="evidence-img">
+            <figcaption>Código fuente de flask_blog con la credencial en texto plano</figcaption>
+          </figure>
+          <figure class="evidence-item">
+            <img src="assets/slide-12.jpg" alt="Escalada de privilegios a root mediante sudo su" class="evidence-img">
+            <figcaption>Shell como root tras reutilizar la credencial filtrada</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="teoria">
+      <div class="container">
+        <h2>Relación con los fundamentos teóricos</h2>
+
+        <h3>Metodología aplicada</h3>
+        <p>
+          El walkthrough siguió las fases estándar de una prueba de penetración:
+          reconocimiento, escaneo, enumeración, análisis de vulnerabilidades, explotación y
+          post-explotación, en línea con metodologías reconocidas como PTES (Penetration
+          Testing Execution Standard).
+        </p>
+
+        <h3>Vulnerabilidades y su relación con OWASP</h3>
+        <ul class="plain-list">
+          <li><strong>SSRF:</strong> el endpoint <code>/run</code> permitió que el servidor realizara peticiones HTTP hacia destinos controlados por el atacante.</li>
+          <li><strong>Control de acceso insuficiente (OWASP A01):</strong> el registro sin restricciones permitió a cualquier cuenta autenticada llegar a un endpoint sensible.</li>
+          <li><strong>OS Command Injection (OWASP A03):</strong> el parámetro "url" se concatenaba sin sanitizar dentro de un comando de shell.</li>
+          <li><strong>Uso de lista negra como control de seguridad:</strong> bloquear palabras específicas es una mitigación fácilmente evadible.</li>
+          <li><strong>Uso de credenciales hardcodeadas (CWE-798):</strong> la contraseña del sistema estaba escrita en texto plano en el código fuente y reutilizada como secreto criptográfico.</li>
+        </ul>
+
+        <h3>Glosario de términos técnicos</h3>
+        <ul class="plain-list">
+          <li><strong>SSRF:</strong> vulnerabilidad que permite a un atacante hacer que el servidor realice peticiones a destinos arbitrarios en su nombre.</li>
+          <li><strong>JWT:</strong> estándar para representar credenciales de forma compacta y firmada digitalmente.</li>
+          <li><strong>Command Injection:</strong> ejecución de comandos arbitrarios del sistema operativo a través de una entrada no validada.</li>
+          <li><strong>Escalada de privilegios:</strong> obtener un nivel de acceso mayor al inicialmente conseguido.</li>
+          <li><strong>Lista negra vs. lista blanca:</strong> una lista negra bloquea patrones conocidos (fácil de evadir); una lista blanca solo permite patrones explícitamente autorizados (más segura).</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="conclusion">
+      <div class="container">
+        <h2>Conclusiones</h2>
+        <p>
+          Este proyecto permitió comprobar en la práctica que la mayoría de los ataques
+          exitosos no dependen de técnicas extraordinariamente sofisticadas, sino de
+          encadenar pequeños errores de configuración y desarrollo hasta obtener control
+          total del sistema: un control de acceso débil permitió filtrar una clave interna,
+          esa clave habilitó una inyección de comandos protegida por una lista negra
+          fácilmente evadible, y una contraseña guardada en texto plano en el código fuente
+          terminó de abrir la puerta a privilegios de root.
+        </p>
+        <p>
+          Como recomendación principal, un entorno real debería evitar la construcción
+          dinámica de comandos de shell a partir de entradas de usuario, aplicar el
+          principio de mínimo privilegio, y nunca almacenar credenciales directamente en el
+          código fuente.
+        </p>
+      </div>
+    </section>
+
+    <section class="section alt" id="video">
+      <div class="container">
+        <h2>Video del walkthrough</h2>
+        <div class="video-wrapper">
+          <iframe
+            src="https://www.youtube.com/embed/VIDEO_ID_AQUI"
+            title="Walkthrough SNAKEOIL"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="descarga">
+      <div class="container">
+        <h2>Informe completo</h2>
+        <p>Documento con el análisis completo, todas las capturas y el detalle paso a paso del walkthrough.</p>
+        <a href="assets/Informe_SNAKEOIL.pdf" class="download-btn" download>
+          Descargar informe (PDF)
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; <span id="year"></span> Edgar Valerio· Portafolio de Seguridad Informatica</p>
+      <p class="footer-secondary"><a href="index.html">&larr; Volver al inicio</a></p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
