@@ -1,1 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 1. Cambia el título de la pestaña -->
+  <title>Tarea 8 — LAB: File Path Traversal | Portafolio</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
 
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="brand-name">Edgar Alejandro Valerio Sanchez</span>
+        <span class="brand-alias">@EdRpmn</span>
+      </div>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="siteNav">
+        <a href="../index.html">Inicio</a>
+        <!-- 2. Ajusta este link a la sección/parcial donde coloques la tarea -->
+        <a href="index.html" class="active">Evidencias</a>
+        <a href="#" class="disabled">Laboratorios</a>
+        <a href="#" class="disabled">Reportes</a>
+        <a href="../index.html#contacto">Contacto</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="container">
+        <!-- 3. Ajusta el parcial y el número de actividad -->
+        <p class="eyebrow">Laboratorio — Tarea 8</p>
+        <h1>LAB: File Path Traversal — Traversal Sequences Blocked with Absolute Path Bypass</h1>
+        <p class="subtitle">PortSwigger Web Security Academy — Path Traversal</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Objetivo</h2>
+        <!-- 4. Pega aquí el objetivo de la actividad, tal como lo pide el rubro -->
+        <p>
+          Este laboratorio contiene una vulnerabilidad de recorrido de ruta en la
+          visualización de imágenes de productos. La aplicación bloquea secuencias
+          transversales pero trata el nombre de archivo proporcionado como si fuera
+          relativo a un directorio de trabajo predeterminado. Para resolver el laboratorio,
+          recupere el contenido del archivo <code>/etc/passwd</code>.
+        </p>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="container">
+        <h2>Desarrollo</h2>
+        <!-- 5. Aquí va el contenido principal: explicación, pasos seguidos, código, etc. -->
+        <p>
+          Explica el procedimiento que seguiste: cómo identificaste el filtro de secuencias
+          transversales, la lógica que asume una ruta relativa a un directorio base, y el
+          payload utilizado para forzar una ruta absoluta que evade ese filtro.
+        </p>
+
+        <!-- Bloque opcional de código: bórralo si no aplica -->
+        <pre><code>// pega aquí la petición/payload utilizado si la actividad lo requiere
+        </code></pre>
+
+        <!-- Bloque opcional de imagen/evidencia visual: bórralo si no aplica -->
+        <!-- <img src="../assets/tarea8-evidencia.png" alt="Descripción de la evidencia" class="evidence-img"> -->
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Resultado / conclusión</h2>
+        <!-- 6. Cierra con el resultado obtenido o lo aprendido -->
+        <p>
+          Resume el resultado obtenido (contenido de <code>/etc/passwd</code> recuperado) y,
+          si aplica, qué aprendiste sobre las limitaciones de filtrar solo secuencias
+          transversales sin normalizar ni restringir la ruta resultante a un directorio base.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; <span id="year"></span> Edgar Valerio· Portafolio de Seguridad Informatica</p>
+      <p class="footer-secondary"><a href="../index.html">&larr; Volver al inicio</a></p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>
